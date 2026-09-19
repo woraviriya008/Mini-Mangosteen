@@ -22,8 +22,15 @@ from PIL import Image
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-PROJECT_ROOT = Path(__file__).resolve().parent
-DATASET_TRAIN = PROJECT_ROOT / "Mangosteen_EdgeAI" / "01_data" / "dataset" / "train"
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+
+possible_train_dirs = [
+    PROJECT_ROOT / "dataset" / "train",
+    SCRIPT_DIR / "dataset" / "train",
+    SCRIPT_DIR / "Mangosteen_EdgeAI" / "01_data" / "dataset" / "train",
+]
+DATASET_TRAIN = next((d for d in possible_train_dirs if d.exists()), PROJECT_ROOT / "dataset" / "train")
 
 def get_original_images(folder: Path):
     if not folder.exists():
@@ -69,6 +76,15 @@ def augment_image_pil(img: Image.Image, seed: int):
         top = (h - new_h) // 2
         pad_img.paste(img_resized, (left, top))
         img = pad_img
+
+    # 4. Subtle brightness jitter (0.92 to 1.08)
+    from PIL import ImageEnhance
+    bright_factor = rng.uniform(0.92, 1.08)
+    img = ImageEnhance.Brightness(img).enhance(bright_factor)
+
+    # 5. Subtle contrast jitter (0.92 to 1.08)
+    contrast_factor = rng.uniform(0.92, 1.08)
+    img = ImageEnhance.Contrast(img).enhance(contrast_factor)
 
     return img
 

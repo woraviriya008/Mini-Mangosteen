@@ -4,6 +4,7 @@
 
 - `Mangosteen_EdgeAI-20260914T064122Z-1-001/` — ชุด snapshot ที่แตกจาก archive
 - `Mangosteen_EdgeAI-20260914T064122Z-1-001.zip` — archive ต้นฉบับ
+- `models/` — สำเนาไฟล์โมเดล TFLite จากการทดสอบรอบก่อนหน้า (`10k`, `20k`, `90plus`)
 - `setup-legacy/` — สำเนา setup scripts รุ่นเดิม
 - `esp-idf-legacy/` — `main/`, `CMakeLists.txt` และ `sdkconfig.defaults` ของเส้นทาง ESP-IDF รุ่นเก่า
 

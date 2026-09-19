@@ -33,27 +33,34 @@
 
 ```text
 Mini-Mangosteen-Detect/
-├── models/                               # จุดวางโมเดล TFLite INT8 สำหรับ setup.py
-│   └── README.md                         # ข้อกำหนด Input/Output ของโมเดล
-├── src/
-│   ├── main.cpp                          # ซอร์สโค้ดเฟิร์มแวร์หลัก (กล้อง, AI, SoftAP, Web Server)
+├── dataset/                              # โครงสร้างโฟลเดอร์สำหรับใส่ภาพชุดข้อมูลใหม่ (train/val/test)
+│   └── README.md                         # คำแนะนำการจัดเตรียมและแบ่งสัดส่วนภาพ
+├── training/                             # เครื่องมือและโค้ดสำหรับการเทรนโมเดล
+│   ├── colab_notebook.ipynb              # Notebook สำหรับเทรนบน Google Colab (GPU ฟรี)
+│   ├── colab_notebook_code.txt           # สำเนาโค้ด Colab แบบข้อความ
+│   ├── train_edge_model.py               # Local training + Full INT8 Quantization
+│   ├── augment_and_save_dataset.py       # เครื่องมือสร้างภาพสังเคราะห์เพิ่มความสมดุล
+│   └── README.md                         # สรุปขั้นตอนการเทรน 1-2-3
+├── models/                               # จุดวางโมเดล TFLite INT8 ที่เทรนเสร็จแล้ว
+│   └── README.md                         # สเปก Input/Output ของโมเดลสำหรับ ESP32-S3
+├── archive/                              # คลังจัดเก็บประวัติและไฟล์เวอร์ชันเก่า
+│   ├── models/                           # สำรองโมเดล TFLite จากการทดสอบรอบก่อนหน้า
+│   ├── esp-idf-legacy/                   # เส้นทาง ESP-IDF รุ่นเดิม
+│   ├── setup-legacy/                     # สคริปต์ setup รุ่นเดิม
+│   └── README.md                         # รายละเอียดสิ่งที่จัดเก็บในคลัง
+├── src/                                  # ซอร์สโค้ดเฟิร์มแวร์ ESP32-S3 (กล้อง, AI, Web SoftAP)
+│   ├── main.cpp                          # โค้ดหลักเฟิร์มแวร์
 │   ├── mangosteen_model_data.h           # Header ข้อมูลโมเดล
-│   └── mangosteen_model_data.cc          # ข้อมูลโมเดล C Byte Array (alignas 16)
+│   └── mangosteen_model_data.cc          # โมเดล C Byte Array (alignas 16)
 ├── platformio.ini                        # ไฟล์ตั้งค่า PlatformIO สำหรับ ESP32-S3
 ├── setup.py                              # สคริปต์ติดตั้ง แปลงโมเดล และแฟลชอัตโนมัติ
 ├── setup.bat                             # ตัวเรียกติดตั้งอัตโนมัติสำหรับ Windows (1-Click)
 ├── convert_tflite_to_c.py                # เครื่องมือแปลงโมเดล TFLite เป็น C++ array
-├── view_camera.py                        # โปรแกรม Python GUI ดูภาพสดผ่านสาย USB (Auto Port)
-├── run_viewer.bat                        # รันโปรแกรม Python GUI บน Windows
+├── view_camera.py                        # โปรแกรม Python GUI ดูภาพสดผ่านสาย USB
+├── run_viewer.bat                        # รันโปรแกรมดูกล้องบน Windows
 ├── requirements.txt                      # รายการไลบรารี Python ที่ต้องใช้
 ├── class_names.json                      # ลำดับคลาสผลลัพธ์ (overripe, ripe, unripe)
-├── training/                             # Dataset, notebooks, models และผลการทดลอง
-│   ├── train_edge_model.py               # Local training + INT8 quantization
-│   ├── augment_and_save_dataset.py       # สร้างภาพ augmentation ลง dataset
-│   └── Mangosteen_EdgeAI/                # ชุดข้อมูลและ artifacts ของการทดลอง
-├── archive/                              # snapshot และไฟล์สำรอง ไม่ใช่ runtime path
-│   └── esp-idf-legacy/                   # เส้นทาง ESP-IDF รุ่นเก่า ไม่ใช่ build หลัก
-├── TRAINING_GUIDE.md                     # คู่มือการเทรนโมเดลและ Quantize บน Colab ฉบับสมบูรณ์
+├── TRAINING_GUIDE.md                     # คู่มือการเทรนโมเดลและ Quantize อย่างละเอียด
 ├── SETUP_GUIDE.md                        # คู่มือการติดตั้งและแฟลชลงบอร์ดอย่างละเอียด
 └── README.md                             # เอกสารแนะนำโปรเจกต์ฉบับนี้
 ```

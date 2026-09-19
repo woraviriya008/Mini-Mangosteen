@@ -87,6 +87,7 @@ def convert_model(model_override=None):
         ]
     else:
         candidates = [
+            os.path.join(PROJECT_ROOT, "models", "mangosteen_separable_cnn_94k_96x96_int8.tflite"),
             os.path.join(PROJECT_ROOT, "models", "mobilenet_v2_alpha35_int8.tflite"),
             os.path.join(PROJECT_ROOT, "models", "mobilenet_v2_alpha025_int8.tflite"),
             os.path.join(PROJECT_ROOT, "models", "basic_cnn_int8.tflite"),
@@ -106,7 +107,7 @@ def convert_model(model_override=None):
         if os.path.exists(models_dir):
             tflites = [os.path.join(models_dir, f) for f in os.listdir(models_dir) if f.endswith(".tflite")]
             if tflites:
-                model_path = os.path.abspath(tflites[0])
+                model_path = max(tflites, key=os.path.getmtime)
 
     if not model_path:
         print("\n===========================================================")

@@ -42,21 +42,30 @@ tf.random.set_seed(SEED)
 
 TRAINING_ROOT = Path(__file__).resolve().parent
 PROJECT_ROOT = TRAINING_ROOT.parent
-DATA_DIR = TRAINING_ROOT / "Mangosteen_EdgeAI" / "01_data" / "dataset"
+
+# Auto-detect dataset directory
+possible_data_dirs = [
+    PROJECT_ROOT / "dataset",
+    TRAINING_ROOT / "dataset",
+    TRAINING_ROOT / "Mangosteen_EdgeAI" / "01_data" / "dataset",
+]
+DATA_DIR = next((d for d in possible_data_dirs if d.exists()), PROJECT_ROOT / "dataset")
 TRAIN_DIR = DATA_DIR / "train"
 VAL_DIR = DATA_DIR / "val"
 TEST_DIR = DATA_DIR / "test"
 
-MODEL_DIR = TRAINING_ROOT / "Mangosteen_EdgeAI" / "03_models"
-RESULT_DIR = TRAINING_ROOT / "Mangosteen_EdgeAI" / "04_results" / "mobilenet_v2_alpha50_int8"
+MODEL_DIR = TRAINING_ROOT / "output_models"
+RESULT_DIR = TRAINING_ROOT / "output_results" / "mobilenet_v2_alpha50_int8"
 SRC_DIR = PROJECT_ROOT / "src"
-DEPLOY_DIR = TRAINING_ROOT / "Mangosteen_EdgeAI" / "05_deployment" / "esp32"
+MODELS_DIR = PROJECT_ROOT / "models"
+DEPLOY_DIR = TRAINING_ROOT / "output_deployment" / "esp32"
 
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 (MODEL_DIR / "keras").mkdir(parents=True, exist_ok=True)
 (MODEL_DIR / "tflite").mkdir(parents=True, exist_ok=True)
 RESULT_DIR.mkdir(parents=True, exist_ok=True)
 DEPLOY_DIR.mkdir(parents=True, exist_ok=True)
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
 IMG_SIZE = (96, 96)
 BATCH_SIZE = 16
@@ -93,6 +102,18 @@ print(f"\n📂 Raw Datasets Loaded:")
 print(f"   - Train : {len(y_train)} (overripe={sum(y_train==0)}, ripe={sum(y_train==1)}, unripe={sum(y_train==2)})")
 print(f"   - Val   : {len(y_val)} (overripe={sum(y_val==0)}, ripe={sum(y_val==1)}, unripe={sum(y_val==2)})")
 print(f"   - Test  : {len(y_test)} (overripe={sum(y_test==0)}, ripe={sum(y_test==1)}, unripe={sum(y_test==2)})")
+
+if len(y_train) == 0:
+    print("\n" + "=" * 60)
+    print("⚠️  ยังไม่พบรูปภาพในชุดข้อมูลสำหรับเริ่มเทรน")
+    print(f"📁 กรุณานำรูปภาพมังคุดแยกใส่ในโฟลเดอร์:")
+    print(f"   1. {TRAIN_DIR / 'overripe'} (มังคุดสุกงอม/ดำคล้ำ)")
+    print(f"   2. {TRAIN_DIR / 'ripe'}     (มังคุดสุกพอดีกิน/ม่วงแดง)")
+    print(f"   3. {TRAIN_DIR / 'unripe'}   (มังคุดดิบ/เขียวหรือด่าง)")
+    print(f"   รวมทั้งโฟลเดอร์ {VAL_DIR} และ {TEST_DIR}")
+    print("💡 ศึกษารายละเอียดเพิ่มเติมได้ที่ dataset/README.md หรือ TRAINING_GUIDE.md")
+    print("=" * 60)
+    sys.exit(0)
 
 # ------------------------------------------------------------------
 # 2. Minority Class (Overripe) Augmentation & Dataset Directory Sync
@@ -448,5 +469,10 @@ const unsigned int {len_name} = {len(tflite_bytes)};
 
 generate_c_files(tflite_model_int8, SRC_DIR)
 generate_c_files(tflite_model_int8, DEPLOY_DIR)
+
+# Copy .tflite model to models/ for setup.py workflow
+target_tflite = MODELS_DIR / f"mobilenet_v2_alpha{int(ALPHA*100)}_int8.tflite"
+target_tflite.write_bytes(tflite_model_int8)
+print(f"   [+] Copied TFLite model to models/: {target_tflite.name}")
 
 print("\n🎉 ALL DONE! The INT8 model is ready for flashing onto the LilyGO T-SIMCAM board!")
